@@ -80,8 +80,11 @@ export async function POST(req: NextRequest) {
       // Sin límite, algunas combinaciones de imágenes han tardado más de
       // 5 minutos en OpenAI y terminan cortadas igual por un timeout interno
       // del SDK, mostrando "cargando" mucho tiempo en el tótem antes de
-      // fallar. Se acota para fallar rápido y poder reintentar.
-      timeout: 90_000,
+      // fallar. Se acota para fallar rápido y poder reintentar. En Netlify
+      // las funciones síncronas matan la petición a los 60s sin excepción,
+      // así que se deja margen para que sea nuestro error (con botón de
+      // reintentar) el que aparezca y no el timeout genérico de la plataforma.
+      timeout: 50_000,
       maxRetries: 1,
     });
     const [personImage, suitImage] = await Promise.all([
